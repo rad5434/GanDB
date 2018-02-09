@@ -10,7 +10,8 @@ def hello():
     return "This is database ec2 instance"
 
 #waaa has the results data
-app.config['MONGO_DBNAME'] = 'waaa'
+#baaaa has 100 gan sketches
+app.config['MONGO_DBNAME'] = 'caaaa'
 app.config['MONGO_HOST'] = '127.0.0.1'
 app.config['MONGO_PORT'] = 27017
 
@@ -30,7 +31,7 @@ def get_all_datas():
     output = json.dumps(output)
     output = json.loads(output)
     #type(loaded_r)  # Output dict
-    print "Getting " + str({'results':output})
+    print "Getting " + str({'data':output})
     #print "Type: "+ str(type(output))
     return jsonify({'results':output})
 
@@ -102,9 +103,9 @@ def add_data():
     data = mongo.db.data
     reqdata = json.loads(request.data)
     vector = reqdata['data']
-    myaxis=vector['axis']
+    #myaxis=vector['axis']
     print vector['id']
-    postall_id = data.insert({'_id':myaxis['id'],'vector': vector})
+    postall_id = data.insert({'_id':vector['id'],'vector': vector})
     print postall_id
     new_postall = data.find_one({'_id': postall_id })
     print new_postall

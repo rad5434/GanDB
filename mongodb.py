@@ -50,6 +50,53 @@ def get_all_data(count):
     #print "The first one:" + str(output[0])
     return jsonify(output[count])
 
+@app.route('/random', methods=['GET'])  #returns one boat per request
+def get_ramdom_one():
+    data = mongo.db.data
+    output = []
+    for s in data.find():
+        #s.pop('_id')
+        print s
+        output.append(s['vector'])
+        #{'vector' : s['vector']}
+    #output=output.encode("ascii", "replace")
+    output = json.dumps(output)
+    output = json.loads(output)
+    #type(loaded_r)  # Output dict
+    #print "Getting " + str({'data':output})
+    mylen = len(output)
+    myrand = randint(0,mylen-1)
+    #print "Type: "+ str(type(output))
+    return jsonify(output[myrand])
+
+
+@app.route('/random/<int:count>', methods=['GET'])  #returns count number of boats per request
+def get_ramdom_count(count):
+    data = mongo.db.data
+    output = []
+    for s in data.find():
+        #s.pop('_id')
+        print s
+        output.append(s['vector'])
+        #{'vector' : s['vector']}
+    #output=output.encode("ascii", "replace")
+    output = json.dumps(output)
+    output = json.loads(output)
+    #type(loaded_r)  # Output dict
+    #print "Getting " + str({'data':output})
+    mylen = len(output)
+    finalList=[]
+    for i in range(count):
+        myrand = randint(0,mylen-1)
+        finalList.append(output[myrand])
+        output.pop(myrand)
+        mylen=mylen - 1
+
+    #finalList.sort(key=id)
+    newlist = sorted(finalList, key=lambda k: k['id']) 
+
+    return jsonify(newlist)
+
 '''@app.route('/data/<int:count>', methods=['GET'])
 def get_one_data(count):
     data = mongo.db.data
@@ -101,6 +148,7 @@ def update_task(count):
 @app.route('/data', methods=['POST'])
 def add_data():
     data = mongo.db.data
+    data.remove({})
     reqdata = json.loads(request.data)
     vector = reqdata['data']
     #myaxis=vector['axis']

@@ -79,16 +79,19 @@ def get_all_datas_human():
 def get_all_data_human(count):
     data = mongo2.db.data
     output = []
+    num=0
     for s in data.find():
         # s.pop('_id')
-        output.append(s['vector'])
+        if num==count:
+            output.append(s['vector'])
+            output = json.dumps(output)
+            output = json.loads(output)
+            return jsonify(output[count])
 
-    #output={'results': output}
-    output = json.dumps(output)
-    output = json.loads(output)
-    print "Getting " + str(output)
-    #print "The first one:" + str(output[0])
-    return jsonify(output[count])
+        else:
+            num+=1
+
+    return jsonify("Not Found")
 
 
 

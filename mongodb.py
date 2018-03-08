@@ -148,7 +148,7 @@ def update_task(count):
 @app.route('/data', methods=['POST'])
 def add_data():
     data = mongo.db.data
-    data.remove({})
+    #data.remove({})
     reqdata = json.loads(request.data)
     vector = reqdata['data']
     #myaxis=vector['axis']

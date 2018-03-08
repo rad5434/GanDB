@@ -15,7 +15,14 @@ app.config['MONGO_DBNAME'] = 'caaaa'
 app.config['MONGO_HOST'] = '127.0.0.1'
 app.config['MONGO_PORT'] = 27017
 
+app.config['MONGO2_DBNAME'] = 'zaaaa'
+app.config['MONGO2_HOST'] = '127.0.0.1'
+app.config['MONGO2_PORT'] = 27017
+
 mongo = PyMongo(app, config_prefix='MONGO')
+mongo2 = PyMongo(app, config_prefix='MONGO2')
+
+
 count=0
 #cdbb actual data is stored
 @app.route('/data', methods=['GET'])
@@ -49,6 +56,41 @@ def get_all_data(count):
     print "Getting " + str(output)
     #print "The first one:" + str(output[0])
     return jsonify(output[count])
+
+
+@app.route('/Hdata', methods=['GET'])
+def get_all_datas_human():
+    data = mongo2.db.data
+    output = []
+    for s in data.find():
+        #s.pop('_id')
+        print s
+        output.append(s['vector'])
+        #{'vector' : s['vector']}
+    #output=output.encode("ascii", "replace")
+    output = json.dumps(output)
+    output = json.loads(output)
+    #type(loaded_r)  # Output dict
+    print "Getting " + str({'data':output})
+    #print "Type: "+ str(type(output))
+    return jsonify({'results':output})
+
+@app.route('/Hdata/<int:count>', methods=['GET'])
+def get_all_data_human(count):
+    data = mongo2.db.data
+    output = []
+    for s in data.find():
+        # s.pop('_id')
+        output.append(s['vector'])
+
+    #output={'results': output}
+    output = json.dumps(output)
+    output = json.loads(output)
+    print "Getting " + str(output)
+    #print "The first one:" + str(output[0])
+    return jsonify(output[count])
+
+
 
 @app.route('/random', methods=['GET'])  #returns one boat per request
 def get_ramdom_one():
@@ -144,6 +186,62 @@ def update_task(count):
 
     #print output[count]
     return jsonify(output)'''
+
+@app.route('/Hdata', methods=['POST'])   #"""HUMAN DATA"""
+def add_data_human():
+    data = mongo2.db.data
+    #data.remove({})
+    reqdata = json.loads(request.data)
+    vector = reqdata['data']
+    #myaxis=vector['axis']
+    print vector['id']
+    postall_id = data.insert({'_id':vector['id'],'vector': vector})
+    print postall_id
+    new_postall = data.find_one({'_id': postall_id })
+    print new_postall
+    output = {'vector': new_postall['vector']}
+    print "Posting " + str(output)
+    return jsonify({'data': output})
+
+@app.route('/Hdata/<int:count>', methods=['POST'])
+def change_data_human(count):
+    print "Posting in post"
+    data = mongo2.db.data
+    reqdata = request.data
+    print type(reqdata)
+    if reqdata:
+        print "Python"
+        reqdata = json.loads(request.data)
+        vector = reqdata['data']
+        postall_id = data.update_one({'_id': vector['id']}, {'$set': {'vector': vector}})
+        print postall_id.matched_count
+        new_postall = data.find_one({'_id': vector['id']})
+        print new_postall
+        output = {'vector': new_postall['vector']}
+        print "Posting " + str(output)
+        return jsonify({'data': output})
+    else:
+        # print myDict
+        # reqdata = json.loads(request.form)
+        print "Unity"
+        reqdata = dict(request.form)
+        print "req data"
+        print reqdata
+        vector = reqdata['data']
+        print "vector"
+        # vector=dict(vector[0])
+        vector = json.loads(vector[0])
+        print vector
+        postall_id = data.update_one({'_id': vector['id']}, {'$set': {'vector': vector}})
+        print postall_id.matched_count
+        new_postall = data.find_one({'_id': vector['id']})
+        print new_postall
+        output = {'vector': new_postall['vector']}
+        print "Posting " + str(output)
+        return jsonify({'data': output})
+
+
+
 
 @app.route('/data', methods=['POST'])
 def add_data():

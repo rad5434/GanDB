@@ -24,6 +24,8 @@ mongo2 = PyMongo(app, config_prefix='MONGO2')
 
 
 count=0
+lastdatasent=0
+myoutput=[]
 #cdbb actual data is stored
 @app.route('/data', methods=['GET'])
 def get_all_datas():
@@ -78,21 +80,17 @@ def get_all_datas_human():
 @app.route('/Hdata/<int:count>', methods=['GET'])
 def get_all_data_human(count):
     data = mongo2.db.data
-    output = []
+    #if count is 0:
+    myoutput = []
     num=0
     for s in data.find():
-        # s.pop('_id')
-        if num==count:
-            output.append(s['vector'])
-            output = json.dumps(output)
-            output = json.loads(output)
-            return jsonify(output[count])
+        #s.pop('_id')
+        myoutput.append(s['vector'])
+       
+    myoutput = json.dumps(myoutput)
+    myoutput = json.loads(myoutput)
 
-        else:
-            num+=1
-
-    return jsonify("Not Found")
-
+    return jsonify(myoutput[count])	
 
 
 @app.route('/random', methods=['GET'])  #returns one boat per request
@@ -141,6 +139,17 @@ def get_ramdom_count(count):
     newlist = sorted(finalList, key=lambda k: k['id']) 
 
     return jsonify(newlist)
+
+
+@app.route('/emptyDB', methods=['GET'])
+def empty_sketches():
+    data = mongo.db.data
+    data.remove({})
+    #print "Type: "+ str(type(output))
+    return jsonify("done")
+
+
+
 
 '''@app.route('/data/<int:count>', methods=['GET'])
 def get_one_data(count):

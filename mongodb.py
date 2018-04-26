@@ -242,6 +242,24 @@ def add_3d_data():
     output = {'data': new_postall['data']}
     return jsonify(output)
 
+@app.route('/3dData/<int:count>', methods=['GET']) #returns based on how much the user asks. It will return based on random order
+def get_3d_data(count):
+    data = mongo3.db.data
+    maxi = mongo3.db.count()-1
+    output = []
+    randnums=[]
+    for i in range(count):
+        myrand = random.randint(0,maxi)
+        if myrand not in randnums:
+            randnums.append(myrand)
+            output.append(data.find(myrand))
+        else:
+            count+=1
+    
+    output = json.dumps(output)
+    output = json.loads(output)
+    return jsonify({"results":output})
+
 
 if __name__ == '__main__':
     app.debug = True

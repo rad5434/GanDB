@@ -3,6 +3,8 @@ import json,ast
 from flask_pymongo import PyMongo
 from random import *
 from pymongo import MongoClient
+from bson.json_util import dumps
+
 
 app=Flask(__name__)
 @app.route('/')
@@ -245,18 +247,19 @@ def add_3d_data():
 @app.route('/3dData/<int:count>', methods=['GET']) #returns based on how much the user asks. It will return based on random order
 def get_3d_data(count):
     data = mongo3.db.data
-    maxi = mongo3.db.count()-1
+    maxi = data.find().count()-1
     output = []
     randnums=[]
     for i in range(count):
-        myrand = random.randint(0,maxi)
+        myrand = randint(0,maxi)
         if myrand not in randnums:
             randnums.append(myrand)
-            output.append(data.find(myrand))
+	    #print data.find_one({'_id':myrand})
+            output.append(data.find({'_id':myrand}))
         else:
             count+=1
     
-    output = json.dumps(output)
+    output = dumps(output)
     output = json.loads(output)
     return jsonify({"results":output})
 

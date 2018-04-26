@@ -19,9 +19,9 @@ app.config['MONGO2_DBNAME'] = 'zaaaa'
 app.config['MONGO2_HOST'] = '127.0.0.1'
 app.config['MONGO2_PORT'] = 27017
 
-app.config['MONGO2_DBNAME'] = '3dData'
-app.config['MONGO2_HOST'] = '127.0.0.1'
-app.config['MONGO2_PORT'] = 27017
+#app.config['MONGO2_DBNAME'] = '3dData'
+#app.config['MONGO2_HOST'] = '127.0.0.1'
+#app.config['MONGO2_PORT'] = 27017
 
 mongo = PyMongo(app, config_prefix='MONGO')
 mongo2 = PyMongo(app, config_prefix='MONGO2')
@@ -236,7 +236,8 @@ def add_3d_data():
     data = mongo3.db.data
     reqdata = json.loads(request.data)
     vector = reqdata['data']
-    postall_id = data.insert({'data': vector})
+    postall_id = data.insert({"_id":vector['id'],'data': vector})
+    #postall_id = vector['id']
     new_postall = data.find_one({'_id': postall_id })
     output = {'data': new_postall['data']}
     return jsonify(output)

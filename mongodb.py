@@ -13,11 +13,11 @@ def hello():
 
 #waaa has the results data
 #baaaa has 100 gan sketches
-app.config['MONGO_DBNAME'] = 'caaaa'
+app.config['MONGO_DBNAME'] = '2d_Data'
 app.config['MONGO_HOST'] = '127.0.0.1'
 app.config['MONGO_PORT'] = 27017
 
-app.config['MONGO2_DBNAME'] = 'zaaaa'
+app.config['MONGO2_DBNAME'] = '2d_Data'
 app.config['MONGO2_HOST'] = '127.0.0.1'
 app.config['MONGO2_PORT'] = 27017
 
@@ -206,22 +206,9 @@ def change_data(count):
 @app.route('/data', methods=['POST'])
 def add_sketches():
     data = mongo.db.data
-    data.remove({})
     reqdata = json.loads(request.data)
-    print reqdata
-    vector = reqdata['results']
-    print "\n\n\nhere we go\n\n\n"
-    print vector
-    print "\n\n\nthere we go\n\n\n"
-    print type(vector)
-    index=0
-    datastored=[]
-    while index < len(vector):
-        print "my Vector \n\n\n" + str(vector[index]) + "\n\n\n"
-        print vector[index]['id']
-        postall_id = data.insert({'vector':vector[index]})
-        print postall_id
-        index+=1
+    vector = reqdata['data']
+    postall_id = data.insert({'vector':vector})
     return jsonify(len(vector))
 
 
